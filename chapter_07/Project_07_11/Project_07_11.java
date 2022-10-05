@@ -161,10 +161,10 @@ public class Project_07_11
                 puzzle.addGuess(row, column, value);
             }
 
-            if (puzzle.isFull())
-                System.out.println("try a again");
-            else
+            if (puzzle.checkPuzzle())
                 System.out.println("You win");
+            else
+                System.out.println("Try again");
 
             System.out.print("you want to quit? ");
             String answer = scanner.next().trim().toLowerCase();
