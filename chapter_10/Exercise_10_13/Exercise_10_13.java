@@ -1,8 +1,9 @@
 package chapter_10;
 
-import com.sun.javafx.geom.AreaOp;
 
 import java.io.*;
+
+import java.util.*;
 
 /**
  * 13. Suppose that we want to store digitized audio information in a binary file.
@@ -18,33 +19,51 @@ import java.io.*;
  * the binary file. When a negative integer is encountered, stop writing
  * the file.
  *
- *
  * @author Sharaf Qeshta
- * */
+ */
 public class Exercise_10_13
 {
-    public static final String BINARY_FILE_NAME = "Exercise_10_13.dat";
-    public static final String TEXT_FILE_NAME = "Exercise_10_13.txt";
-
     public static void main(String[] args)
     {
-        try (
-                ObjectInputStream reader =
-                        new ObjectInputStream(new FileInputStream(BINARY_FILE_NAME));
-                PrintWriter writer = new PrintWriter(new File(TEXT_FILE_NAME)))
+        Scanner x = new Scanner(System.in);
+        System.out.println("Enter the binary file name to create: ");
+        String name = x.next();
+        try
         {
-            String order = reader.readUTF();
-            for (char x : order.toCharArray())
+            ObjectOutputStream out_File = new ObjectOutputStream(new FileOutputStream(name));
+            System.out.println("Enter the integer data:");
+            int n = x.nextInt();
+            while (n < 0)
             {
-                if (x == 'i')
-                    writer.write(reader.readInt() + "\n");
-                else
-                    writer.write(reader.readDouble() + "\n");
+                System.out.println("Please enter a positive value.");
+                n = x.nextInt();
             }
+            out_File.writeInt(n);
+            int Min = Math.max(n - 127, 0);
+            int Max = Math.min(n + 127, Integer.MAX_VALUE);
+            int nextData = x.nextInt();
+            while (nextData >= 0)
+            {
+                if (nextData >= Min && nextData <= Max)
+                {
+                    byte difference = (byte) (nextData - n);
+                    out_File.writeByte(difference);
+                    System.out.println("The difference is " + difference);
+                    n = nextData;
+                    Min = Math.max(n - 127, 0);
+                    Max = Math.min(n + 127, Integer.MAX_VALUE);
+                }
+                else
+                    System.out.println("The data value must be in the range of " + Min + " to " + Max);
+                nextData = x.nextInt();
+            }
+            out_File.close();
         }
-        catch (Exception exception)
+        catch (Exception e)
         {
-            exception.printStackTrace();
+            System.out.println("We had a problem:" + e.getMessage());
         }
+
     }
+
 }
